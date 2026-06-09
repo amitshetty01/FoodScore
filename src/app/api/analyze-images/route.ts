@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const files = ['frontImage', 'nutritionImage', 'ingredientsImage']
     .map((field) => ({ field, file: formData.get(field) as File | null }))
-    .filter(({ file }) => file instanceof File && file.size > 0);
+    .filter((item): item is { field: string; file: File } => item.file instanceof File && item.file.size > 0);
 
   if (files.length === 0) {
     return NextResponse.json({ error: 'No files uploaded.' }, { status: 400 });
@@ -123,6 +123,7 @@ export async function POST(request: NextRequest) {
 
   const worker = await createWorker('eng');
 
+  try {
     const extractedParts: string[] = [];
     for (const { file } of files) {
       const buffer = await file.arrayBuffer();
