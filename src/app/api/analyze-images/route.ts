@@ -121,11 +121,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No files uploaded.' }, { status: 400 });
   }
 
-  const worker = createWorker();
-  try {
-    await worker.load();
-    await worker.loadLanguage('eng');
-    await worker.initialize('eng');
+  const worker = await createWorker('eng');
 
     const extractedParts: string[] = [];
     for (const { file } of files) {
