@@ -123,8 +123,10 @@ export async function POST(request: NextRequest) {
 
   const worker = await createWorker('eng');
 
+  try {
     const extractedParts: string[] = [];
     for (const { file } of files) {
+      if (!file) continue;
       const buffer = await file.arrayBuffer();
       const { data } = await worker.recognize(Buffer.from(buffer));
       extractedParts.push(data.text || '');
