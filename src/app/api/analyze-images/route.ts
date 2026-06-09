@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No files uploaded.' }, { status: 400 });
   }
 
-  const worker = createWorker({ logger: () => null });
+  const worker = createWorker();
   try {
     await worker.load();
     await worker.loadLanguage('eng');
