@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { getScoreColor } from '@/lib/utils';
 
 interface ScoreRingProps {
   score: number;

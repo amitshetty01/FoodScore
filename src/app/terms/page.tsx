@@ -10,7 +10,7 @@ export default function TermsPage() {
     },
     {
       title: '2. Description of Service',
-      content: 'FoodScore provides nutritional health scores and information for food products sourced from Open Food Facts. Scores are algorithmic estimates for informational purposes only and should not be considered medical or dietary advice.',
+      content: 'FoodScore provides nutritional health scores and information for food products sourced from public databases. Scores are algorithmic estimates for informational purposes only and should not be considered medical or dietary advice.',
     },
     {
       title: '3. User Accounts',
@@ -18,7 +18,7 @@ export default function TermsPage() {
     },
     {
       title: '4. Accuracy of Information',
-      content: 'Product data is sourced from Open Food Facts, a community-driven database. While we strive for accuracy, we cannot guarantee that all nutritional information is complete or up to date. Always verify important nutritional information on the actual product label.',
+      content: 'Product data is sourced from public food databases. While we strive for accuracy, we cannot guarantee that all nutritional information is complete or up to date. Always verify important nutritional information on the actual product label.',
     },
     {
       title: '5. Not Medical Advice',
@@ -26,7 +26,7 @@ export default function TermsPage() {
     },
     {
       title: '6. Intellectual Property',
-      content: 'The FoodScore application, brand, and original content are owned by FoodScore. Product data is provided by Open Food Facts under the Open Database License (ODbL). You may not reproduce or redistribute our proprietary content without permission.',
+      content: 'The FoodScore application, brand, and original content are owned by FoodScore. You may not reproduce or redistribute our proprietary content without permission.',
     },
     {
       title: '7. Limitation of Liability',

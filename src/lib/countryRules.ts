@@ -51,6 +51,8 @@ export interface NutritionGuidelines {
 }
 
 // INDIA - Based on FSSAI and ICMR guidelines
+// India has stricter sugar limits due to high diabetes prevalence (ICMR 2022).
+// Higher fiber recommended to align with traditional plant-rich diets.
 export const indiaGuidelines: NutritionGuidelines = {
   country: 'IN',
   countryName: 'India',
@@ -61,23 +63,23 @@ export const indiaGuidelines: NutritionGuidelines = {
     protein_min_g: 50,
     carbohydrates_g: 300,
     fat_max_g: 67,
-    saturated_fat_max_g: 22,
-    fiber_min_g: 25,
-    sugar_max_g: 50,
+    saturated_fat_max_g: 20,
+    fiber_min_g: 35,
+    sugar_max_g: 40,
     sodium_max_mg: 2300,
     potassium_min_mg: 3500,
   },
   
   serving: {
-    sugar_max_g: 6,
-    sodium_max_mg: 230,
-    saturated_fat_max_g: 2.2,
+    sugar_max_g: 5,
+    sodium_max_mg: 200,
+    saturated_fat_max_g: 2.0,
   },
   
   childGuidelines: {
     calories: 1400,
-    sugar_max_g: 25,
-    sodium_max_mg: 1200,
+    sugar_max_g: 20,
+    sodium_max_mg: 1000,
     protein_min_g: 20,
   },
   
@@ -131,6 +133,8 @@ export const usaGuidelines: NutritionGuidelines = {
 };
 
 // CANADA - Based on Health Canada guidelines
+// Health Canada's sodium reduction strategy targets 2000mg/day.
+// Stricter free sugar limit (20% of calories ≈ 40g) and saturated fat <10% energy.
 export const canadaGuidelines: NutritionGuidelines = {
   country: 'CA',
   countryName: 'Canada',
@@ -142,22 +146,22 @@ export const canadaGuidelines: NutritionGuidelines = {
     carbohydrates_g: 300,
     fat_max_g: 65,
     saturated_fat_max_g: 20,
-    fiber_min_g: 25,
-    sugar_max_g: 50,
-    sodium_max_mg: 2300,
+    fiber_min_g: 28,
+    sugar_max_g: 40,
+    sodium_max_mg: 2000,
     potassium_min_mg: 3400,
   },
   
   serving: {
-    sugar_max_g: 5,
-    sodium_max_mg: 120,
-    saturated_fat_max_g: 2,
+    sugar_max_g: 4,
+    sodium_max_mg: 100,
+    saturated_fat_max_g: 1.5,
   },
   
   childGuidelines: {
     calories: 1500,
-    sugar_max_g: 25,
-    sodium_max_mg: 1300,
+    sugar_max_g: 20,
+    sodium_max_mg: 1100,
     protein_min_g: 20,
   },
   
@@ -171,6 +175,8 @@ export const canadaGuidelines: NutritionGuidelines = {
 };
 
 // AUSTRALIA - Based on FSANZ and Australian Dietary Guidelines
+// NHMRC recommends lower sodium (2000mg) and slightly higher saturated fat allowance.
+// Fiber recommendation aligns with 25g adequate intake.
 export const australiaGuidelines: NutritionGuidelines = {
   country: 'AU',
   countryName: 'Australia',
@@ -189,15 +195,15 @@ export const australiaGuidelines: NutritionGuidelines = {
   },
   
   serving: {
-    sugar_max_g: 5,
-    sodium_max_mg: 120,
-    saturated_fat_max_g: 2,
+    sugar_max_g: 6,
+    sodium_max_mg: 150,
+    saturated_fat_max_g: 2.5,
   },
   
   childGuidelines: {
     calories: 1400,
     sugar_max_g: 25,
-    sodium_max_mg: 1100,
+    sodium_max_mg: 900,
     protein_min_g: 19,
   },
   

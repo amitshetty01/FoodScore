@@ -15,7 +15,7 @@ export function ToastContainer() {
   );
 }
 
-function Toast({ id, message, type, onRemove }: { id: string; message: string; type: string; onRemove: () => void }) {
+function Toast({ message, type, onRemove }: { id: string; message: string; type: string; onRemove: () => void }) {
   useEffect(() => {
     const timer = setTimeout(onRemove, 4000);
     return () => clearTimeout(timer);

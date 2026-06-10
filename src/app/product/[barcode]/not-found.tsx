@@ -12,7 +12,7 @@ export default function ProductNotFound() {
           Product Not Found
         </h1>
         <p className="text-zinc-500 leading-relaxed mb-8">
-          We couldn&apos;t find this product in the Open Food Facts database. It may not have been added yet, or the barcode may be incorrect.
+          We couldn&apos;t find this product in our database. It may not have been added yet, or the barcode may be incorrect.
         </p>
         <div className="flex gap-3 justify-center flex-wrap">
           <Link href="/search"
@@ -29,11 +29,7 @@ export default function ProductNotFound() {
           </Link>
         </div>
         <p className="text-xs text-zinc-400 mt-6">
-          Want to add this product?{' '}
-          <a href="https://world.openfoodfacts.org/cgi/product.pl" target="_blank" rel="noopener noreferrer"
-            className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">
-            Contribute to Open Food Facts →
-          </a>
+          Try uploading product images for analysis instead.
         </p>
       </div>
     </div>

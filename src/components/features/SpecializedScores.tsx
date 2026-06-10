@@ -42,32 +42,32 @@ export const SpecializedScores: React.FC<SpecializedScoresProps> = ({ score }) =
   ];
 
   return (
-    <div className="space-y-4">
-      <h3 className="font-bold text-lg text-gray-900 dark:text-white">Specialized Scores</h3>
+    <div className="space-y-3 sm:space-y-4">
+      <h3 className="font-bold text-sm sm:text-lg text-gray-900 dark:text-white">Specialized Scores</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {categories.map(category => {
           const config = healthScoreConfig[category.value];
           return (
             <div
               key={category.title}
-              className={`p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 ${config.bg}`}
+              className={`p-3 sm:p-4 rounded-lg border-2 border-gray-200 dark:border-zinc-700 ${config.bg}`}
             >
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">{category.title}</p>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{category.description}</p>
+              <div className="flex items-start justify-between gap-2 mb-1.5 sm:mb-2">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm">{category.title}</p>
+                  <p className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 mt-0.5">{category.description}</p>
                 </div>
-                <span className="text-2xl">{config.icon}</span>
+                <span className="text-xl sm:text-2xl shrink-0">{config.icon}</span>
               </div>
-              <div className={`inline-block font-bold text-lg ${config.text} mt-2`}>{category.value}</div>
+              <div className={`inline-block font-bold text-sm sm:text-lg ${config.text}`}>{category.value}</div>
             </div>
           );
         })}
       </div>
 
-      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-sm text-blue-800 dark:text-blue-200">
-        <p className="font-semibold mb-1">ℹ️ Information</p>
+      <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 sm:p-3 text-xs sm:text-sm text-blue-800 dark:text-blue-200">
+        <p className="font-semibold mb-0.5 sm:mb-1">ℹ️ Information</p>
         <p>These specialized scores evaluate the product for specific dietary needs and health conditions.</p>
       </div>
     </div>

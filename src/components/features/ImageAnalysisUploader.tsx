@@ -193,7 +193,7 @@ export function ImageAnalysisUploader() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-700 dark:text-emerald-300">Generated Food Score</p>
-                <h3 className="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">{Math.round((result.healthScore / 100) * 10 * 10) / 10}/10</h3>
+                <h3 className="mt-2 text-3xl font-bold text-zinc-900 dark:text-white">{result.healthScore.toFixed(1)}/10</h3>
                 <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">{result.verdict}</p>
               </div>
               <div className="rounded-3xl bg-white px-4 py-3 text-sm font-semibold text-zinc-900 shadow-sm dark:bg-zinc-900 dark:text-zinc-100">
@@ -231,6 +231,8 @@ export function ImageAnalysisUploader() {
                 <p>Sugars: {result.nutritionFacts.sugars ?? 'N/A'} g</p>
                 <p>Sodium: {result.nutritionFacts.sodium ?? 'N/A'} mg</p>
                 <p>Saturated fat: {result.nutritionFacts.saturated_fat ?? 'N/A'} g</p>
+                {result.nutritionFacts.proteins !== undefined && <p>Protein: {result.nutritionFacts.proteins} g</p>}
+                {result.nutritionFacts.fiber !== undefined && <p>Fiber: {result.nutritionFacts.fiber} g</p>}
               </div>
             </div>
             <div className="rounded-3xl border border-zinc-200 bg-white p-5 text-sm dark:border-zinc-800 dark:bg-zinc-900/80">
@@ -242,6 +244,13 @@ export function ImageAnalysisUploader() {
               </ul>
             </div>
           </div>
+
+          {result.ingredients && (
+            <div className="rounded-3xl border border-zinc-200 bg-white p-5 text-sm dark:border-zinc-800 dark:bg-zinc-900/80">
+              <p className="font-semibold text-zinc-900 dark:text-zinc-100">Detected Ingredients</p>
+              <p className="mt-3 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">{result.ingredients}</p>
+            </div>
+          )}
 
           <div className="rounded-3xl border border-zinc-200 bg-white p-5 text-sm dark:border-zinc-800 dark:bg-zinc-900/80">
             <p className="font-semibold text-zinc-900 dark:text-zinc-100">Extracted text</p>

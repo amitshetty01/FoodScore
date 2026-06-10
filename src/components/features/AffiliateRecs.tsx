@@ -75,31 +75,31 @@ export function AffiliateRecommendations({ product }: { product: FoodProduct }) 
   if (recs.length === 0) return null;
 
   return (
-    <div className="glass rounded-2xl p-5">
-      <h3 className="font-syne font-bold text-zinc-900 dark:text-white mb-4 flex items-center gap-2 text-sm">
-        <Sparkles size={14} className="text-amber-400" /> Healthier Alternatives
+    <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-5">
+      <h3 className="font-syne font-bold text-zinc-900 dark:text-white mb-3 sm:mb-4 flex items-center gap-2 text-xs sm:text-sm">
+        <Sparkles size={13} className="text-amber-400 shrink-0" /> Healthier Alternatives
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-2 sm:space-y-3">
         {recs.map((rec) => (
           <a
             key={rec.tag}
             href={rec.affiliateUrl}
             target="_blank"
             rel="noopener noreferrer sponsored"
-            className="flex items-center gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
+            className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
           >
-            <div className="w-8 h-8 rounded-lg bg-white dark:bg-zinc-700 flex items-center justify-center shrink-0 shadow-sm">
-              <ShoppingBag size={14} className="text-zinc-500" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white dark:bg-zinc-700 flex items-center justify-center shrink-0 shadow-sm">
+              <ShoppingBag size={13} className="text-zinc-500" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-zinc-800 dark:text-zinc-200">{rec.title}</p>
-              <p className="text-xs text-zinc-400 truncate">{rec.description}</p>
+              <p className="text-[11px] sm:text-xs font-semibold text-zinc-800 dark:text-zinc-200 truncate">{rec.title}</p>
+              <p className="text-[11px] sm:text-xs text-zinc-400 truncate">{rec.description}</p>
             </div>
-            <ExternalLink size={12} className="text-zinc-300 group-hover:text-emerald-500 transition-colors shrink-0" />
+            <ExternalLink size={11} className="text-zinc-300 group-hover:text-emerald-500 transition-colors shrink-0" />
           </a>
         ))}
       </div>
-      <p className="text-xs text-zinc-300 dark:text-zinc-600 mt-3">
+      <p className="text-[11px] sm:text-xs text-zinc-300 dark:text-zinc-600 mt-2 sm:mt-3">
         * Affiliate links — we may earn a small commission
       </p>
     </div>
@@ -113,9 +113,9 @@ export function SearchAlternativesButton({ product }: { product: FoodProduct }) 
   return (
     <Link
       href={`/search?q=${encodeURIComponent(category)}`}
-      className="flex items-center justify-center gap-2 w-full h-10 glass rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
+      className="flex items-center justify-center gap-2 w-full h-9 sm:h-10 glass rounded-xl text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
     >
-      <Sparkles size={14} /> Find Healthier Alternatives
+      <Sparkles size={13} /> Find Healthier Alternatives
     </Link>
   );
 }

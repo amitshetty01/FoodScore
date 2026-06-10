@@ -18,7 +18,7 @@ export default function PrivacyPage() {
     },
     {
       title: '4. Third-Party Services',
-      content: `FoodScore uses Open Food Facts (openfoodfacts.org) to fetch product data. This is a public, read-only API and no personal data is sent to them. If you use Google sign-in, Google's privacy policy applies to that authentication step. We may display Google AdSense advertisements, which may set cookies according to Google's advertising policies.`,
+      content: `FoodScore fetches product data from public databases to provide nutritional information. If you use Google sign-in, Google's privacy policy applies to that authentication step. We may display Google AdSense advertisements, which may set cookies according to Google's advertising policies.`,
     },
     {
       title: '5. Cookies',

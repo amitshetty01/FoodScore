@@ -4,7 +4,7 @@ import { Shield, Zap, BarChart2, Search } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About — FoodScore',
-  description: 'Learn how FoodScore calculates health scores for food products using Open Food Facts data.',
+  description: 'Learn how FoodScore calculates health scores for food products.',
 };
 
 export default function AboutPage() {
@@ -28,7 +28,7 @@ export default function AboutPage() {
             FoodScore makes nutritional information accessible and actionable. We take the complex world of nutrition labels and translate it into a simple, honest score from 1 to 10.
           </p>
           <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            Our data comes from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener noreferrer" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">Open Food Facts</a> — a free, open, collaborative database of food products from around the world with over 3 million entries.
+            We aggregate nutritional data from public sources to provide comprehensive health scores and dietary insights.
           </p>
         </div>
 
@@ -67,11 +67,11 @@ export default function AboutPage() {
           <h2 className="font-syne font-bold text-2xl text-zinc-900 dark:text-white mb-6">Grade Scale</h2>
           <div className="grid grid-cols-5 gap-3">
             {[
-              { grade: 'A', range: '85–100', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300', desc: 'Excellent' },
-              { grade: 'B', range: '70–84', color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300', desc: 'Good' },
-              { grade: 'C', range: '55–69', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300', desc: 'Average' },
-              { grade: 'D', range: '40–54', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300', desc: 'Below Average' },
-              { grade: 'E', range: '0–39', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300', desc: 'Poor' },
+              { grade: 'A', range: '8.5–10', color: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300', desc: 'Excellent' },
+              { grade: 'B', range: '7.0–8.4', color: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300', desc: 'Good' },
+              { grade: 'C', range: '5.5–6.9', color: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300', desc: 'Average' },
+              { grade: 'D', range: '4.0–5.4', color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300', desc: 'Below Average' },
+              { grade: 'E', range: '0–3.9', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300', desc: 'Poor' },
             ].map(g => (
               <div key={g.grade} className={`rounded-2xl p-4 text-center ${g.color}`}>
                 <div className="font-syne font-black text-3xl mb-1">{g.grade}</div>

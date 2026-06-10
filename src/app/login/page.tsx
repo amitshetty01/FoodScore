@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Loader2, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -38,9 +38,17 @@ export default function LoginPage() {
       const result = await signIn('google', { redirect: false, callbackUrl: '/dashboard' });
       if (result?.error) {
         console.error('Google sign-in error:', result.error);
-        setError('Google sign-in failed. Please try again or check your internet connection.');
-      } else if (result?.ok) {
-        router.push('/dashboard');
+        if (result.error === 'OAuthSignin' || result.error === 'OAuthCallback') {
+          setError('Google Sign-In is not configured. Please contact support.');
+        } else if (result.error === 'AccessDenied') {
+          setError('Access denied. You may already have an account with this email.');
+        } else {
+          setError('Google sign-in failed. Please try again or check your internet connection.');
+        }
+      } else if (result?.url) {
+        window.location.href = result.url;
+      } else {
+        setError('An unexpected error occurred. Please try again.');
       }
     } catch (err) {
       console.error('Google sign-in exception:', err);

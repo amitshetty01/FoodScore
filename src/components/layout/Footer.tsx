@@ -23,37 +23,37 @@ export function Footer() {
   };
 
   return (
-    <footer className="border-t border-zinc-100 dark:border-zinc-800 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+    <footer className="border-t border-zinc-100 dark:border-zinc-800 mt-12 sm:mt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4 group">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
+          <div className="col-span-2 sm:col-span-4 md:col-span-1">
+            <Link href="/" className="flex items-center gap-2 mb-3 sm:mb-4 group">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
                 <span className="text-white font-bold text-xs font-syne">F</span>
               </div>
-              <span className="font-syne font-bold text-base text-zinc-900 dark:text-white">FoodScore</span>
+              <span className="font-syne font-bold text-sm sm:text-base text-zinc-900 dark:text-white">FoodScore</span>
             </Link>
             <p className="text-xs text-zinc-400 leading-relaxed max-w-[180px]">
               Know what you eat. Health scores for millions of products.
             </p>
-            <p className="text-xs text-zinc-400 mt-4 flex items-center gap-1">
-              Built with <Heart size={11} className="text-red-400 fill-current" /> using Open Food Facts
+            <p className="text-xs text-zinc-400 mt-3 sm:mt-4 flex items-center gap-1">
+              Made with <Heart size={11} className="text-red-400 fill-current" /> for healthier choices
             </p>
           </div>
 
           {/* Link columns */}
           {Object.entries(links).map(([section, items]) => (
             <div key={section}>
-              <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3">{section}</h3>
-              <ul className="space-y-2">
+              <h3 className="text-[11px] sm:text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2 sm:mb-3">{section}</h3>
+              <ul className="space-y-1.5 sm:space-y-2">
                 {items.map(item => (
                   <li key={item.label}>
                     <Link
                       href={item.href}
                       target={'external' in item && item.external ? '_blank' : undefined}
                       rel={'external' in item && item.external ? 'noopener noreferrer' : undefined}
-                      className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
+                      className="text-xs sm:text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -64,16 +64,8 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-10 pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-zinc-400">© {currentYear} FoodScore. All rights reserved.</p>
-          <p className="text-xs text-zinc-400">
-            Product data from{' '}
-            <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener noreferrer"
-              className="font-medium hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
-              Open Food Facts
-            </a>{' '}
-            under ODbL license.
-          </p>
+        <div className="mt-8 sm:mt-10 pt-5 sm:pt-6 border-t border-zinc-100 dark:border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-zinc-400 text-center sm:text-left">© {currentYear} FoodScore. All rights reserved.</p>
         </div>
       </div>
     </footer>

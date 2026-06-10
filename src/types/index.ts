@@ -72,7 +72,7 @@ export interface ImageAnalysisResult {
   nutritionFacts: NutritionFacts;
   ingredients?: string;
   extractedText: string;
-  healthScore: number;
+  healthScore: number; // 1-10 scale
   verdict: string;
   confidence: ConfidenceRating;
   topReasons: string[];

@@ -8,6 +8,7 @@ import { FavoriteButton } from '@/components/features/FavoriteButton';
 import { AffiliateRecommendations, SearchAlternativesButton } from '@/components/features/AffiliateRecs';
 import { EnhancedScoreDisplay } from '@/components/features/EnhancedScoreDisplay';
 import { getNutriScoreColor, getGradeColor, classifyIngredient, getIngredientBadgeClass } from '@/lib/utils';
+import { translateIngredient } from '@/lib/ingredientTranslation';
 import { AlertCircle, Tag, Package, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { FoodProduct, SearchResult } from '@/types';
@@ -81,16 +82,21 @@ export default async function ProductPage({ params }: ProductPageProps) {
         .map(item => item.trim())
         .filter(Boolean)
     )
-  ).map(ingredient => ({
-    name: ingredient,
-    status: classifyIngredient(
-      ingredient,
-      product.ingredientTags,
-      product.additives,
-      product.allergens,
-      product.ingredientAnalysisTags
-    ),
-  }));
+  ).map(ingredient => {
+    const translated = translateIngredient(ingredient);
+    return {
+      original: ingredient,
+      name: translated,
+      status: classifyIngredient(
+        translated,
+        product.ingredientTags,
+        product.additives,
+        product.allergens,
+        product.ingredientAnalysisTags
+      ),
+      isTranslated: translated !== ingredient.toLowerCase().trim(),
+    };
+  });
 
   const alternatives = await getHealthierAlternatives(product, score.total);
 
@@ -124,83 +130,83 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </Link>
 
           {/* Product header */}
-          <div className="glass rounded-3xl p-6 mb-6">
-            <div className="flex items-start gap-5">
-              <div className="w-28 h-28 rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center shadow-md">
+          <div className="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 mb-6">
+            <div className="flex items-start gap-3 sm:gap-5">
+              <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-xl sm:rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center shadow-md">
                 {product.imageUrl ? (
                   <Image src={product.imageUrl} alt={product.name} width={112} height={112} className="object-contain w-full h-full" unoptimized />
                 ) : (
-                  <span className="text-4xl">🍽️</span>
+                  <span className="text-2xl sm:text-4xl">🍽️</span>
                 )}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h1 className="font-syne font-extrabold text-xl sm:text-2xl text-zinc-900 dark:text-white leading-tight">{product.name}</h1>
-                    {product.brand && <p className="text-sm text-zinc-500 mt-0.5">{product.brand}</p>}
+                  <div className="min-w-0">
+                    <h1 className="font-syne font-extrabold text-base sm:text-lg md:text-2xl text-zinc-900 dark:text-white leading-tight break-words">{product.name}</h1>
+                    {product.brand && <p className="text-xs sm:text-sm text-zinc-500 mt-0.5 truncate">{product.brand}</p>}
                   </div>
                   <FavoriteButton product={product} score={score.total} />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2 mt-3">
-                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${getGradeColor(score.grade)}`}>
+                <div className="flex flex-wrap items-center gap-1.5 mt-2 sm:mt-3">
+                  <span className={`text-[11px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${getGradeColor(score.grade)}`}>
                     Grade {score.grade}
                   </span>
                   {product.nutriScore && (
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full text-white ${getNutriScoreColor(product.nutriScore)}`}>
+                    <span className={`text-[11px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white ${getNutriScoreColor(product.nutriScore)}`}>
                       Nutri-Score {product.nutriScore.toUpperCase()}
                     </span>
                   )}
                   {product.novaGroup && (
-                    <span className="text-xs font-medium px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
+                    <span className="text-[11px] sm:text-xs font-medium px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400">
                       NOVA {product.novaGroup}
                     </span>
                   )}
                   {product.quantity && (
-                    <span className="text-xs text-zinc-400 flex items-center gap-1">
-                      <Package size={11} /> {product.quantity}
+                    <span className="text-[11px] sm:text-xs text-zinc-400 flex items-center gap-1">
+                      <Package size={10} /> {product.quantity}
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs font-mono text-zinc-400 mt-2 flex items-center gap-1">
-                  <Tag size={11} /> {params.barcode}
+                <p className="text-[11px] sm:text-xs font-mono text-zinc-400 mt-1.5 sm:mt-2 flex items-center gap-1 truncate">
+                  <Tag size={10} /> {params.barcode}
                 </p>
               </div>
             </div>
           </div>
 
           {/* Main content grid */}
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left: Nutrition panel */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               <EnhancedScoreDisplay product={product} />
 
               <NutritionPanel score={score} nutriments={product.nutriments} />
 
               {alternatives.length > 0 && (
-                <div className="glass rounded-2xl p-5">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
+                <div className="glass rounded-2xl p-4 sm:p-5">
+                  <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4">
+                    <div className="min-w-0">
                       <h3 className="font-syne font-bold text-zinc-900 dark:text-white text-sm">Healthier Alternatives</h3>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Products with a stronger health score than this item.</p>
                     </div>
-                    <span className="text-xs uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400 font-semibold">Better score</span>
+                    <span className="text-[11px] sm:text-xs uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400 font-semibold shrink-0">Better score</span>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2 sm:space-y-3">
                     {alternatives.map((alt) => (
                       <Link
                         key={alt.barcode}
                         href={`/product/${alt.barcode}`}
-                        className="block p-3 rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                        className="block p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-zinc-50 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                       >
-                        <div className="flex items-center justify-between gap-4">
-                          <div>
-                            <p className="text-sm font-semibold text-zinc-900 dark:text-white truncate">{alt.name}</p>
-                            {alt.brand && <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 truncate">{alt.brand}</p>}
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-xs sm:text-sm font-semibold text-zinc-900 dark:text-white truncate">{alt.name}</p>
+                            {alt.brand && <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 truncate">{alt.brand}</p>}
                           </div>
-                          <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getGradeColor(alt.grade ?? 'C')}`}>
+                          <span className={`text-[11px] sm:text-xs font-semibold px-2 py-1 rounded-full shrink-0 ${getGradeColor(alt.grade ?? 'C')}`}>
                             Grade {alt.grade ?? 'C'}
                           </span>
                         </div>
@@ -218,31 +224,34 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Ingredients */}
               {product.ingredients && (
-                <div className="glass rounded-2xl p-5">
-                  <h3 className="font-syne font-bold text-zinc-900 dark:text-white mb-3 text-sm">Ingredients</h3>
-                  <div className="flex flex-wrap gap-2 mb-3">
+                <div className="glass rounded-2xl p-4 sm:p-5">
+                  <h3 className="font-syne font-bold text-zinc-900 dark:text-gray-100 mb-2 sm:mb-3 text-sm">Ingredients</h3>
+                  <div className="flex flex-wrap gap-1.5 mb-2 sm:mb-3">
                     {ingredientItems.map(item => (
-                      <span key={item.name} className={`text-xs font-medium px-2.5 py-1 rounded-full ${getIngredientBadgeClass(item.status)}`}>
-                        {item.name}
+                      <span key={item.original} className={`text-[11px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full ${getIngredientBadgeClass(item.status)}`}>
+                        {item.isTranslated ? item.name : item.original}
                       </span>
                     ))}
                   </div>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed">{product.ingredients}</p>
-                  <div className="mt-3 text-[11px] uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
-                    <span className="font-semibold text-red-700 dark:text-red-300">Harmful</span> · <span className="font-semibold text-emerald-700 dark:text-emerald-300">Good</span> · <span className="font-semibold text-zinc-700 dark:text-zinc-200">Neutral</span>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 leading-relaxed line-clamp-4 sm:line-clamp-none">{product.ingredients}</p>
+                  {ingredientItems.some(i => i.isTranslated) && (
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-2 italic">Some ingredients interpreted from their original language.</p>
+                  )}
+                  <div className="mt-2 sm:mt-3 text-[10px] sm:text-[11px] uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
+                    <span className="font-semibold text-red-700 dark:text-red-400">Harmful</span> · <span className="font-semibold text-emerald-700 dark:text-emerald-400">Good</span> · <span className="font-semibold text-zinc-700 dark:text-zinc-300">Neutral</span>
                   </div>
                 </div>
               )}
 
               {/* Allergens */}
               {product.allergens && product.allergens.length > 0 && (
-                <div className="glass rounded-2xl p-5 border border-amber-200 dark:border-amber-800/50">
-                  <h3 className="font-syne font-bold text-amber-700 dark:text-amber-400 mb-3 text-sm flex items-center gap-1.5">
-                    <AlertCircle size={14} /> Allergens
+                <div className="glass rounded-2xl p-4 sm:p-5 border border-amber-200 dark:border-amber-700/50">
+                  <h3 className="font-syne font-bold text-amber-700 dark:text-amber-300 mb-2 sm:mb-3 text-sm flex items-center gap-1.5">
+                    <AlertCircle size={13} /> Allergens
                   </h3>
                   <div className="flex flex-wrap gap-1.5">
                     {product.allergens.map(a => (
-                      <span key={a} className="text-xs font-medium px-2 py-1 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 capitalize">
+                      <span key={a} className="text-[11px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 capitalize">
                         {a}
                       </span>
                     ))}
@@ -252,11 +261,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Additives */}
               {product.additives && product.additives.length > 0 && (
-                <div className="glass rounded-2xl p-5">
-                  <h3 className="font-syne font-bold text-zinc-900 dark:text-white mb-3 text-sm">Additives ({product.additives.length})</h3>
-                  <div className="flex flex-wrap gap-1.5">
+                <div className="glass rounded-2xl p-4 sm:p-5">
+                  <h3 className="font-syne font-bold text-zinc-900 dark:text-gray-100 mb-2 sm:mb-3 text-sm">Additives ({product.additives.length})</h3>
+                  <div className="flex flex-wrap gap-1">
                     {product.additives.slice(0, 12).map(a => (
-                      <span key={a} className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 uppercase">
+                      <span key={a} className="text-[11px] sm:text-xs font-mono px-1.5 sm:px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 uppercase">
                         {a}
                       </span>
                     ))}
@@ -269,11 +278,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
               {/* Labels */}
               {product.labels && product.labels.length > 0 && (
-                <div className="glass rounded-2xl p-5">
-                  <h3 className="font-syne font-bold text-zinc-900 dark:text-white mb-3 text-sm">Labels & Certifications</h3>
-                  <div className="flex flex-wrap gap-1.5">
+                <div className="glass rounded-2xl p-4 sm:p-5">
+                  <h3 className="font-syne font-bold text-zinc-900 dark:text-gray-100 mb-2 sm:mb-3 text-sm">Labels & Certifications</h3>
+                  <div className="flex flex-wrap gap-1">
                     {product.labels.slice(0, 8).map(l => (
-                      <span key={l} className="text-xs font-medium px-2 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 capitalize">
+                      <span key={l} className="text-[11px] sm:text-xs font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 capitalize">
                         {l.replace(/-/g, ' ')}
                       </span>
                     ))}

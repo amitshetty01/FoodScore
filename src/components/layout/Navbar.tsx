@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
 import { useState, useEffect } from 'react';
-import { Sun, Moon, Scan, Search, Heart, LayoutDashboard, LogOut, User, ChevronDown, Shield } from 'lucide-react';
+import { Sun, Moon, Scan, Search, Heart, LayoutDashboard, LogOut, ChevronDown, Shield, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Navbar() {
@@ -11,6 +11,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -47,13 +48,22 @@ export function Navbar() {
         </div>
 
         {/* Right actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            className="flex md:hidden w-8 h-8 rounded-xl items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+            aria-label={mobileNavOpen ? 'Close menu' : 'Open menu'}
+          >
+            {mobileNavOpen ? <X size={17} /> : <Menu size={17} />}
+          </button>
+
           {mounted && (
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-zinc-500 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all"
             >
-              {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+              {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
           )}
 
@@ -61,17 +71,17 @@ export function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="flex items-center gap-2 h-9 px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-sm font-medium"
+                className="flex items-center gap-1.5 h-8 sm:h-9 px-2 sm:px-3 rounded-xl bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all text-xs sm:text-sm font-medium"
               >
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-white text-xs font-bold shrink-0">
                   {session.user?.name?.[0]?.toUpperCase() || 'U'}
                 </div>
-                <span className="hidden sm:block text-zinc-700 dark:text-zinc-300">{session.user?.name?.split(' ')[0]}</span>
-                <ChevronDown size={14} className="text-zinc-400" />
+                <span className="hidden sm:block text-zinc-700 dark:text-zinc-300 max-w-[80px] truncate">{session.user?.name?.split(' ')[0]}</span>
+                <ChevronDown size={13} className="text-zinc-400 shrink-0" />
               </button>
 
               {menuOpen && (
-                <div className="absolute right-0 top-12 w-48 glass rounded-2xl shadow-xl p-1 z-50">
+                <div className="absolute right-0 top-10 sm:top-12 w-48 glass rounded-2xl shadow-xl p-1 z-50">
                   <Link href="/dashboard" onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800">
                     <LayoutDashboard size={14} /> My Dashboard
@@ -95,17 +105,29 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link href="/login" className="h-9 px-4 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <Link href="/login" className="h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors flex items-center">
                 Sign in
               </Link>
-              <Link href="/signup" className="h-9 px-4 text-sm font-semibold bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl hover:opacity-90 transition-opacity flex items-center">
+              <Link href="/signup" className="h-8 sm:h-9 px-3 sm:px-4 text-xs sm:text-sm font-semibold bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl hover:opacity-90 transition-opacity flex items-center whitespace-nowrap">
                 Get started
               </Link>
             </div>
           )}
         </div>
       </nav>
+
+      {/* Mobile navigation panel */}
+      {mobileNavOpen && (
+        <div className="md:hidden glass border-t border-zinc-200 dark:border-zinc-700">
+          <div className="px-4 py-3 space-y-1">
+            <MobileNavLink href="/search" icon={<Search size={15} />} onClick={() => setMobileNavOpen(false)}>Search</MobileNavLink>
+            <MobileNavLink href="/scan" icon={<Scan size={15} />} onClick={() => setMobileNavOpen(false)}>Scan</MobileNavLink>
+            {session && <MobileNavLink href="/dashboard" icon={<Heart size={15} />} onClick={() => setMobileNavOpen(false)}>Favorites</MobileNavLink>}
+            {isAdmin && <MobileNavLink href="/admin" icon={<Shield size={15} />} onClick={() => setMobileNavOpen(false)}>Admin</MobileNavLink>}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
@@ -114,6 +136,15 @@ function NavLink({ href, icon, children }: { href: string; icon: React.ReactNode
   return (
     <Link href={href} className="flex items-center gap-1.5 h-9 px-3 rounded-xl text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
       {icon}{children}
+    </Link>
+  );
+}
+
+function MobileNavLink({ href, icon, children, onClick }: { href: string; icon: React.ReactNode; children: React.ReactNode; onClick: () => void }) {
+  return (
+    <Link href={href} onClick={onClick} className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all">
+      <span className="text-zinc-400 dark:text-zinc-500">{icon}</span>
+      {children}
     </Link>
   );
 }

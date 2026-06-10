@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { FoodProduct, CountryCode } from '@/types';
+import { FoodProduct } from '@/types';
 import { calculateEnhancedHealthScore } from '@/lib/enhancedScoring';
 import { CountrySelector } from './CountrySelector';
 import { EnhancedScoreCard } from './EnhancedScoreCard';
@@ -23,7 +23,9 @@ export const EnhancedScoreDisplay: React.FC<EnhancedScoreDisplayProps> = ({
 
   const [enhancedScore, setEnhancedScore] = useState(() => {
     try {
-      return calculateEnhancedHealthScore(product, selectedCountry);
+      const result = calculateEnhancedHealthScore(product, selectedCountry);
+      console.log(`[CountryScoring] Initial score (${selectedCountry}): ${result.score}`, result.breakdown);
+      return result;
     } catch (error) {
       console.error('Error calculating enhanced score:', error);
       return null;
@@ -38,7 +40,9 @@ export const EnhancedScoreDisplay: React.FC<EnhancedScoreDisplayProps> = ({
     const frame = window.requestAnimationFrame(() => {
       if (!active) return;
       try {
-        setEnhancedScore(calculateEnhancedHealthScore(product, selectedCountry));
+        const result = calculateEnhancedHealthScore(product, selectedCountry);
+        console.log(`[CountryScoring] Recalculated (${selectedCountry}): nutrition=${result.breakdown.nutrition} ingredients=${result.breakdown.ingredients} processing=${result.breakdown.processing} positive=${result.breakdown.positiveFactors} final=${result.score}`);
+        setEnhancedScore(result);
       } catch (error) {
         console.error('Error calculating enhanced score:', error);
         setEnhancedScore(null);
@@ -61,12 +65,12 @@ export const EnhancedScoreDisplay: React.FC<EnhancedScoreDisplayProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Country Selector */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="font-bold text-lg text-gray-900 dark:text-white">Enhanced Analysis</h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+      <div className="flex flex-col gap-2 sm:gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="font-bold text-sm sm:text-lg text-gray-900 dark:text-white">Enhanced Analysis</h2>
+          <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 sm:mt-1">
             {isUpdating ? `Recalculating with ${selectedCountry} guidelines...` : `Using ${selectedCountry} dietary guidelines`}
           </p>
         </div>

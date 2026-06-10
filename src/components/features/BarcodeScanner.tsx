@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Camera, X, Zap } from 'lucide-react';
+import { Camera, Zap } from 'lucide-react';
 
 export function BarcodeScanner({ onClose }: { onClose?: () => void }) {
   const scannerRef = useRef<HTMLDivElement>(null);

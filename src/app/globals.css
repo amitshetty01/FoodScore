@@ -27,25 +27,25 @@
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 95%;
-    --card: 24 9.8% 10%;
+    --card: 240 10% 7%;
     --card-foreground: 0 0% 95%;
-    --popover: 0 0% 9%;
+    --popover: 240 10% 7%;
     --popover-foreground: 0 0% 95%;
-    --primary: 142 70% 45%;
+    --primary: 142 70% 50%;
     --primary-foreground: 144.9 80.4% 10%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 240 5% 17%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 12 6.5% 15.1%;
+    --muted: 240 5% 17%;
+    --muted-foreground: 240 5% 70%;
+    --accent: 12 6.5% 17%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 142 70% 45%;
+    --border: 240 5% 20%;
+    --input: 240 5% 20%;
+    --ring: 142 70% 50%;
   }
 }
 
@@ -56,7 +56,11 @@
 
 @layer components {
   .glass {
-    @apply bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl border border-white/20 dark:border-zinc-700/50;
+    @apply bg-white/70 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/20 dark:border-zinc-700/50;
+  }
+
+  .glass-card {
+    @apply bg-white/90 dark:bg-zinc-800/90 backdrop-blur-xl border border-zinc-200 dark:border-zinc-700/60;
   }
 
   .score-ring {

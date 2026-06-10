@@ -25,7 +25,7 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-xs font-semibold text-emerald-700 dark:text-emerald-400 mb-6 shadow-sm">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            Comprehensive Food Database · 3M+ products
+            Comprehensive Food Database
           </div>
 
           <h1 className="font-syne font-extrabold text-5xl sm:text-6xl lg:text-7xl text-zinc-900 dark:text-white leading-[1.05] mb-6">

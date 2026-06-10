@@ -11,18 +11,27 @@ function hashPassword(password: string): string {
 
 export { hashPassword };
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID ?? '';
+const googleClientSecret = process.env.GOOGLE_CLIENT_SECRET ?? '';
+const hasGoogleConfig = !!(googleClientId && googleClientSecret);
+
+if (!hasGoogleConfig) {
+  console.warn('[Auth] Google OAuth is not configured — "Continue with Google" button will show an error.');
+}
+
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions['adapter'],
   session: { strategy: 'jwt' },
   pages: {
     signIn: '/login',
+    error: '/login',
     newUser: '/dashboard',
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
+    ...(hasGoogleConfig
+      ? [GoogleProvider({ clientId: googleClientId, clientSecret: googleClientSecret })]
+      : []
+    ),
     CredentialsProvider({
       name: 'credentials',
       credentials: {

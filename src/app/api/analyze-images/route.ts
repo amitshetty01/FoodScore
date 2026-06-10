@@ -2,19 +2,20 @@ import { createWorker } from 'tesseract.js';
 import { NextResponse } from 'next/server';
 import { calculateHealthScore } from '@/lib/scoring';
 import { normalizeIngredientTag } from '@/lib/utils';
-import type { ImageAnalysisResult, NutritionFacts } from '@/types';
+import { OCR_LANGUAGES, detectLanguage, translateIngredients } from '@/lib/ingredientTranslation';
+import type { FoodProduct, ImageAnalysisResult, NutritionFacts } from '@/types';
 import type { NextRequest } from 'next/server';
 
 const FIELD_PATTERNS: Array<{ key: keyof NutritionFacts; patterns: RegExp[]; unit?: string }> = [
-  { key: 'energy_kcal', patterns: [/energy\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(kcal|kj)?/i, /calories\s*[:=]?\s*([0-9]+\.?[0-9]*)/i] },
-  { key: 'proteins', patterns: [/protein[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'carbohydrates', patterns: [/carbohydrate[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /carb[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'sugars', patterns: [/sugar[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'fat', patterns: [/fat\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'saturated_fat', patterns: [/saturated\s*fat\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /sat\.?\s*fat\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'fiber', patterns: [/fiber\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /fibre\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'sodium', patterns: [/sodium\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*mg/i, /sodium\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
-  { key: 'salt', patterns: [/salt\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'energy_kcal', patterns: [/energy\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(kcal|kj)?/i, /calories\s*[:=]?\s*([0-9]+\.?[0-9]*)/i, /énergie\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(kcal|kj)?/i, /energia\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(kcal|kj)?/i, /energie\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(kcal|kj)?/i] },
+  { key: 'proteins', patterns: [/protein[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /protéine[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /proteine\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /proteína[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /eiweiß\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'carbohydrates', patterns: [/carbohydrate[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /carb[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /glucides\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /carboidrati\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /hidratos de carbono\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /kohlenhydrate\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'sugars', patterns: [/sugar[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /sucre[s]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /zuccher[i]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /azúcares?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /zucker\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'fat', patterns: [/fat\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /matières? grasses?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /grass[i]?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /grasas?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /fett\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'saturated_fat', patterns: [/saturated\s*fat\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /sat\.?\s*fat\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /acides? gras? saturés?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /grassi saturi\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /grasas? saturadas?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /gesättigte fettsäuren\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'fiber', patterns: [/fiber\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /fibre\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /fibres?\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /fibra\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /ballaststoffe\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
+  { key: 'sodium', patterns: [/sodium\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*mg/i, /sodium\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /natrium\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*mg/i, /sodio\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*mg/i] },
+  { key: 'salt', patterns: [/salt\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /sel\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i, /sale\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*g/i] },
 ];
 
 function parseNutrition(text: string): NutritionFacts {
@@ -45,19 +46,41 @@ function parseNutrition(text: string): NutritionFacts {
   return nutrition;
 }
 
-function parseIngredients(text: string): string | undefined {
-  const ingredientsMatch = text.match(/ingredients\s*[:\-]?\s*(.+)/i);
+function parseIngredients(text: string, language: string): string | undefined {
+  const ingredientHeaders: Record<string, RegExp> = {
+    en: /ingredients\s*[:\-]?\s*(.+)/i,
+    fr: /ingrédients?\s*[:\-]?\s*(.+)/i,
+    it: /ingredienti\s*[:\-]?\s*(.+)/i,
+    es: /ingredientes?\s*[:\-]?\s*(.+)/i,
+    de: /zutaten\s*[:\-]?\s*(.+)/i,
+  };
+
+  const regex = ingredientHeaders[language] || ingredientHeaders.en;
+  const ingredientsMatch = text.match(regex);
   if (ingredientsMatch) {
     return ingredientsMatch[1].trim();
   }
+
+  // Try all headers as fallback
+  for (const [, headerRegex] of Object.entries(ingredientHeaders)) {
+    const match = text.match(headerRegex);
+    if (match) return match[1].trim();
+  }
+
   const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  const candidate = lines.find((line) => /^ingredients?/i.test(line));
-  return candidate?.replace(/^ingredients?\s*[:\-]?\s*/i, '').trim();
+  const candidate = lines.find((line) =>
+    /^ingredients?|^ingrédients?|^ingredienti|^ingredientes?|^zutaten/i.test(line)
+  );
+  return candidate?.replace(/^[^:]*[:\-]?\s*/i, '').trim();
 }
 
 function parseServingSize(text: string): string | undefined {
-  const match = text.match(/serving\s*size\s*[:=]?\s*([^\n]+)/i);
-  return match?.[1].trim();
+  const patterns = [/serving\s*size\s*[:=]?\s*([^\n]+)/i, /portion\s*[:=]?\s*([^\n]+)/i, /porzione\s*[:=]?\s*([^\n]+)/i, /ración\s*[:=]?\s*([^\n]+)/i, /portion\s*[:=]?\s*([^\n]+)/i];
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) return match[1].trim();
+  }
+  return undefined;
 }
 
 function createConfidence(nutrition: NutritionFacts, ingredients?: string): ImageAnalysisResult['confidence'] {
@@ -67,26 +90,41 @@ function createConfidence(nutrition: NutritionFacts, ingredients?: string): Imag
   return 'Low Confidence';
 }
 
-function buildAnalysisResult(text: string): ImageAnalysisResult {
+function buildAnalysisResult(text: string, detectedLang: string): ImageAnalysisResult {
   const nutritionFacts = parseNutrition(text);
-  const ingredients = parseIngredients(text);
+  const ingredients = parseIngredients(text, detectedLang);
   const servingSize = parseServingSize(text);
-  const nameMatch = text.match(/^(.*?)\s*-\s*/m);
+  const nameMatch = text.match(/^(.*?)\s*[-–—]\s*/m);
   const productName = nameMatch ? nameMatch[1].trim() : undefined;
+
+  // Translate ingredients if detected language is not English
+  let translatedIngredients: string | undefined;
+  let ingredientTags: string[] = [];
+  if (ingredients) {
+    const rawIngredients = ingredients.split(/[,;]\s*/).map(i => i.trim()).filter(Boolean);
+    if (detectedLang !== 'en') {
+      const translated = translateIngredients(rawIngredients);
+      translatedIngredients = translated.map(t => t.translated).join(', ');
+      ingredientTags = translated.map(t => normalizeIngredientTag(t.translated));
+    } else {
+      translatedIngredients = ingredients;
+      ingredientTags = rawIngredients.map(normalizeIngredientTag);
+    }
+  }
 
   const product = {
     barcode: 'unknown',
     name: productName || 'Unknown product',
     brand: undefined,
-    ingredients,
-    ingredientTags: ingredients ? ingredients.split(/[,;]\s*/).map(normalizeIngredientTag) : [],
+    ingredients: translatedIngredients || ingredients,
+    ingredientTags: ingredientTags,
     additives: [],
     labels: [],
     categories: [],
     nutriments: nutritionFacts,
-  } as const;
+  };
 
-  const score = calculateHealthScore(product as any);
+  const score = calculateHealthScore(product as FoodProduct);
   const confidence = createConfidence(nutritionFacts, ingredients);
 
   const notes: string[] = [];
@@ -95,15 +133,18 @@ function buildAnalysisResult(text: string): ImageAnalysisResult {
     notes.push('Nutrition values were partially detected; score confidence may be reduced.');
   }
   if (!servingSize) notes.push('Serving size could not be extracted from the label.');
+  if (detectedLang !== 'en' && ingredients) {
+    notes.push(`Detected language: ${detectedLang.toUpperCase()}. Ingredients were automatically interpreted.`);
+  }
 
   return {
     productName,
     brandName: undefined,
     servingSize,
     nutritionFacts,
-    ingredients,
+    ingredients: translatedIngredients || ingredients,
     extractedText: text,
-    healthScore: Math.round(score.total),
+    healthScore: score.total,
     verdict: score.summary,
     confidence,
     topReasons: score.breakdown.slice(0, 4).map((item) => item.explanation),
@@ -121,7 +162,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No files uploaded.' }, { status: 400 });
   }
 
-  const worker = await createWorker('eng');
+  // Use all OCR languages for best coverage
+  const worker = await createWorker(OCR_LANGUAGES.join('+'));
 
   try {
     const extractedParts: string[] = [];
@@ -133,10 +175,14 @@ export async function POST(request: NextRequest) {
     }
 
     const extractedText = extractedParts.filter(Boolean).join('\n\n');
-    const result = buildAnalysisResult(extractedText);
+
+    // Detect language from extracted text for ingredient parsing
+    const detectedTextLang = detectLanguage(extractedText);
+    const result = buildAnalysisResult(extractedText, detectedTextLang);
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to analyze uploaded images.' }, { status: 500 });
+    console.error('OCR analysis error:', error);
+    return NextResponse.json({ error: 'Failed to analyze uploaded images. Please try clearer photos.' }, { status: 500 });
   } finally {
     await worker.terminate();
   }
