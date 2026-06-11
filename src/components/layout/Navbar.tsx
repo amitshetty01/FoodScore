@@ -2,9 +2,18 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
-import { useState, useEffect } from 'react';
-import { Sun, Moon, Scan, Search, Heart, LayoutDashboard, LogOut, ChevronDown, Shield, Menu, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Sun, Moon, Scan, Search, Heart, LayoutDashboard, LogOut, ChevronDown, Shield, Menu, X, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAppStore } from '@/lib/store';
+import { CountryCode } from '@/types';
+
+const countryFlags: Record<CountryCode, string> = {
+  IN: '🇮🇳', US: '🇺🇸', CA: '🇨🇦', AU: '🇦🇺',
+};
+const countryNames: Record<CountryCode, string> = {
+  IN: 'India', US: 'USA', CA: 'Canada', AU: 'Australia',
+};
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -13,6 +22,22 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [countryOpen, setCountryOpen] = useState(false);
+  const countryRef = useRef<HTMLDivElement>(null);
+  const selectedCountry = useAppStore((s) => s.selectedCountry);
+  const setSelectedCountry = useAppStore((s) => s.setSelectedCountry);
+  const hasSelectedCountry = useAppStore((s) => s.hasSelectedCountry);
+  const setHasSelectedCountry = useAppStore((s) => s.setHasSelectedCountry);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
+        setCountryOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -43,6 +68,7 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-1">
           <NavLink href="/search" icon={<Search size={15} />}>Search</NavLink>
           <NavLink href="/scan" icon={<Scan size={15} />}>Scan</NavLink>
+          <NavLink href="/compare" icon={<BarChart3 size={15} />}>Compare</NavLink>
           {session && <NavLink href="/dashboard" icon={<Heart size={15} />}>Favorites</NavLink>}
           {isAdmin && <NavLink href="/admin" icon={<Shield size={15} />}>Admin</NavLink>}
         </div>
@@ -67,6 +93,38 @@ export function Navbar() {
             </button>
           )}
 
+          {/* Country switcher */}
+          <div className="relative" ref={countryRef}>
+            <button
+              onClick={() => { setCountryOpen(!countryOpen); if (!hasSelectedCountry) { setHasSelectedCountry(true); } }}
+              className="h-8 sm:h-9 px-2 rounded-xl flex items-center gap-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all border border-zinc-200 dark:border-zinc-700 relative"
+              title={`Country: ${countryNames[selectedCountry]}`}
+            >
+              {!hasSelectedCountry && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 animate-pulse" />}
+              <span className="text-base leading-none">{countryFlags[selectedCountry]}</span>
+              <span className="hidden sm:inline text-xs">{countryNames[selectedCountry]}</span>
+            </button>
+            {countryOpen && (
+              <div className="absolute right-0 top-10 sm:top-12 w-44 glass rounded-2xl shadow-xl p-1 z-50 border border-zinc-200 dark:border-zinc-700">
+                {(['IN', 'US', 'CA', 'AU'] as CountryCode[]).map((code) => (
+                  <button
+                    key={code}
+                    onClick={() => { setSelectedCountry(code); setCountryOpen(false); }}
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors ${
+                      selectedCountry === code
+                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200 font-semibold'
+                        : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                    }`}
+                  >
+                    <span className="text-base">{countryFlags[code]}</span>
+                    <span className="flex-1 text-left">{countryNames[code]}</span>
+                    {selectedCountry === code && <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {session ? (
             <div className="relative">
               <button
@@ -84,11 +142,11 @@ export function Navbar() {
                 <div className="absolute right-0 top-10 sm:top-12 w-48 glass rounded-2xl shadow-xl p-1 z-50">
                   <Link href="/dashboard" onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                    <LayoutDashboard size={14} /> My Dashboard
+                    <LayoutDashboard size={14} /> Dashboard
                   </Link>
-                  <Link href="/dashboard/favorites" onClick={() => setMenuOpen(false)}
+                  <Link href="/compare" onClick={() => setMenuOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-                    <Heart size={14} /> Favorites
+                    <BarChart3 size={14} /> Compare
                   </Link>
                   {isAdmin && (
                     <Link href="/admin" onClick={() => setMenuOpen(false)}
@@ -123,6 +181,7 @@ export function Navbar() {
           <div className="px-4 py-3 space-y-1">
             <MobileNavLink href="/search" icon={<Search size={15} />} onClick={() => setMobileNavOpen(false)}>Search</MobileNavLink>
             <MobileNavLink href="/scan" icon={<Scan size={15} />} onClick={() => setMobileNavOpen(false)}>Scan</MobileNavLink>
+            <MobileNavLink href="/compare" icon={<BarChart3 size={15} />} onClick={() => setMobileNavOpen(false)}>Compare</MobileNavLink>
             {session && <MobileNavLink href="/dashboard" icon={<Heart size={15} />} onClick={() => setMobileNavOpen(false)}>Favorites</MobileNavLink>}
             {isAdmin && <MobileNavLink href="/admin" icon={<Shield size={15} />} onClick={() => setMobileNavOpen(false)}>Admin</MobileNavLink>}
           </div>

@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Shield, Zap, BarChart2, Search } from 'lucide-react';
+import { Shield, Zap, BarChart2, Search, Globe, Award } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'About — FoodScore',
-  description: 'Learn how FoodScore calculates health scores for food products.',
+  description: 'Learn how FoodScore calculates health scores for food products using government dietary guidelines.',
 };
 
 export default function AboutPage() {
@@ -17,7 +17,7 @@ export default function AboutPage() {
             About <span className="gradient-text">FoodScore</span>
           </h1>
           <p className="text-lg text-zinc-500 leading-relaxed max-w-xl mx-auto">
-            We believe everyone deserves to know what's really in their food — without needing a nutrition degree.
+            We believe everyone deserves to know what&apos;s really in their food — without needing a nutrition degree.
           </p>
         </div>
 
@@ -28,7 +28,7 @@ export default function AboutPage() {
             FoodScore makes nutritional information accessible and actionable. We take the complex world of nutrition labels and translate it into a simple, honest score from 1 to 10.
           </p>
           <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-            We aggregate nutritional data from public sources to provide comprehensive health scores and dietary insights.
+            We aggregate nutritional data from public sources and analyze products against government dietary guidelines to provide comprehensive health scores and dietary insights.
           </p>
         </div>
 
@@ -36,7 +36,69 @@ export default function AboutPage() {
         <div className="glass rounded-3xl p-8 mb-8">
           <h2 className="font-syne font-bold text-2xl text-zinc-900 dark:text-white mb-6">How Scoring Works</h2>
           <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
-            Every product starts at 5/10. Our algorithm then adjusts the score based on key nutritional factors per 100g:
+            Every product is analyzed across four dimensions. Each dimension is weighted and scored against country-specific government dietary guidelines. The total is normalized to a 1-10 scale.
+          </p>
+
+          <div className="space-y-6">
+            {/* Four scoring pillars */}
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="bg-emerald-50 dark:bg-emerald-950/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🥗</span>
+                  <h3 className="font-bold text-zinc-900 dark:text-white">Nutrition (40 pts)</h3>
+                </div>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Evaluates protein, fiber, sugar, sodium, and saturated fat against daily recommendations.</p>
+              </div>
+              <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🧪</span>
+                  <h3 className="font-bold text-zinc-900 dark:text-white">Ingredients (30 pts)</h3>
+                </div>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Assesses additive content, country-restricted substances, and beneficial components.</p>
+              </div>
+              <div className="bg-amber-50 dark:bg-amber-950/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🏭</span>
+                  <h3 className="font-bold text-zinc-900 dark:text-white">Processing (15 pts)</h3>
+                </div>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">NOVA classification 1-4. Less processed foods receive higher scores.</p>
+              </div>
+              <div className="bg-violet-50 dark:bg-violet-950/20 rounded-xl p-4 border border-violet-200 dark:border-violet-800">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">🌟</span>
+                  <h3 className="font-bold text-zinc-900 dark:text-white">Positive Factors (15 pts)</h3>
+                </div>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">Bonus for organic certification, fortification, whole grains, and allergen labeling.</p>
+              </div>
+            </div>
+
+            <h3 className="font-syne font-bold text-xl text-zinc-900 dark:text-white mt-8 mb-4">Country-Specific Analysis</h3>
+            <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+              We support dietary guidelines from four countries. Each product is re-evaluated when you switch countries, applying local daily limits for sugar, sodium, and saturated fat, as well as local fortification standards and additive restrictions.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { code: 'US', name: 'United States', desc: 'FDA Dietary Guidelines' },
+                { code: 'IN', name: 'India', desc: 'ICMR Guidelines' },
+                { code: 'CA', name: 'Canada', desc: 'Canada Food Guide' },
+                { code: 'AU', name: 'Australia', desc: 'NHMRC Guidelines' },
+              ].map(c => (
+                <div key={c.code} className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-3 text-center border border-zinc-200 dark:border-zinc-700">
+                  <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{c.code}</div>
+                  <div className="text-xs font-semibold text-zinc-800 dark:text-zinc-200 mt-0.5">{c.name}</div>
+                  <div className="text-[10px] text-zinc-500 mt-0.5">{c.desc}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Scoring factors detail */}
+        <div className="glass rounded-3xl p-8 mb-8">
+          <h2 className="font-syne font-bold text-2xl text-zinc-900 dark:text-white mb-6">Base Score Factors</h2>
+          <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed mb-6">
+            Every product starts at 5/10. Our algorithm adjusts the score based on these key factors per 100g:
           </p>
           <div className="space-y-4">
             {[
@@ -49,10 +111,10 @@ export default function AboutPage() {
               { factor: 'Processing Level', impact: 'mixed', desc: 'Using the NOVA classification, ultra-processed foods (Group 4) are penalised while unprocessed foods (Group 1) are rewarded.' },
             ].map(item => (
               <div key={item.factor} className="flex gap-4">
-                <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${
+                <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
                   item.impact === 'positive' ? 'bg-emerald-400' :
                   item.impact === 'negative' ? 'bg-red-400' : 'bg-amber-400'
-                }`} style={{ marginTop: '8px' }} />
+                }`} />
                 <div>
                   <span className="font-semibold text-zinc-800 dark:text-zinc-200">{item.factor}: </span>
                   <span className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">{item.desc}</span>
@@ -91,6 +153,8 @@ export default function AboutPage() {
               { icon: <Zap className="text-amber-500" size={20} />, title: 'Instant Scoring', desc: 'Real-time health scores with full breakdowns.' },
               { icon: <BarChart2 className="text-blue-500" size={20} />, title: 'Nutrition Details', desc: 'Full macro and micronutrient breakdown per 100g.' },
               { icon: <Shield className="text-violet-500" size={20} />, title: 'Allergen Alerts', desc: 'Clear allergen and additive information.' },
+              { icon: <Globe className="text-sky-500" size={20} />, title: 'Country Comparison', desc: 'Switch between US, IN, CA, AU guidelines.' },
+              { icon: <Award className="text-rose-500" size={20} />, title: 'Compare Products', desc: 'Side-by-side comparison of scores and nutrition.' },
             ].map(f => (
               <div key={f.title} className="flex gap-3">
                 <div className="w-9 h-9 rounded-xl bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center shrink-0">{f.icon}</div>

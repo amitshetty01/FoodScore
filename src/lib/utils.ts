@@ -23,12 +23,12 @@ export function getScoreBg(score: number): string {
 
 export function getGradeColor(grade: string): string {
   switch (grade) {
-    case 'A': return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200';
-    case 'B': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-    case 'C': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-    case 'D': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-    case 'F': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-    default: return 'bg-gray-100 text-gray-800';
+    case 'A': return 'bg-emerald-600 text-white dark:bg-emerald-500 dark:text-white';
+    case 'B': return 'bg-green-600 text-white dark:bg-green-500 dark:text-white';
+    case 'C': return 'bg-yellow-500 text-white dark:bg-yellow-400 dark:text-zinc-900';
+    case 'D': return 'bg-orange-500 text-white dark:bg-orange-400 dark:text-white';
+    case 'F': return 'bg-red-600 text-white dark:bg-red-500 dark:text-white';
+    default: return 'bg-zinc-400 text-white';
   }
 }
 
@@ -39,12 +39,12 @@ export function formatNutrient(value?: number, unit = 'g', decimals = 1): string
 
 export function getNutriScoreColor(grade?: string): string {
   switch (grade?.toLowerCase()) {
-    case 'a': return 'bg-[#038141]';
-    case 'b': return 'bg-[#85BB2F]';
-    case 'c': return 'bg-[#FECB02]';
-    case 'd': return 'bg-[#EE8100]';
-    case 'e': return 'bg-[#E63E11]';
-    default: return 'bg-gray-400';
+    case 'a': return 'bg-[#038141] text-white';
+    case 'b': return 'bg-[#85BB2F] text-white';
+    case 'c': return 'bg-[#FECB02] text-zinc-900';
+    case 'd': return 'bg-[#EE8100] text-white';
+    case 'e': return 'bg-[#E63E11] text-white';
+    default: return 'bg-gray-400 text-white';
   }
 }
 

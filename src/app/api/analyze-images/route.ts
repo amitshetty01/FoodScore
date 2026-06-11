@@ -2,7 +2,7 @@ import { createWorker } from 'tesseract.js';
 import { NextResponse } from 'next/server';
 import { calculateHealthScore } from '@/lib/scoring';
 import { normalizeIngredientTag } from '@/lib/utils';
-import type { ImageAnalysisResult, NutritionFacts } from '@/types';
+import type { FoodProduct, ImageAnalysisResult, NutritionFacts } from '@/types';
 import type { NextRequest } from 'next/server';
 
 const FIELD_PATTERNS: Array<{ key: keyof NutritionFacts; patterns: RegExp[]; unit?: string }> = [
@@ -86,7 +86,7 @@ function buildAnalysisResult(text: string): ImageAnalysisResult {
     nutriments: nutritionFacts,
   } as const;
 
-  const score = calculateHealthScore(product as any);
+  const score = calculateHealthScore(product as unknown as FoodProduct);
   const confidence = createConfidence(nutritionFacts, ingredients);
 
   const notes: string[] = [];
@@ -121,10 +121,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'No files uploaded.' }, { status: 400 });
   }
 
- const worker = await createWorker('eng');
+  try {
+    const worker = await createWorker('eng');
 
     const extractedParts: string[] = [];
     for (const { file } of files) {
+      if (!file) continue;
       const buffer = await file.arrayBuffer();
       const { data } = await worker.recognize(Buffer.from(buffer));
       extractedParts.push(data.text || '');
@@ -132,10 +134,9 @@ export async function POST(request: NextRequest) {
 
     const extractedText = extractedParts.filter(Boolean).join('\n\n');
     const result = buildAnalysisResult(extractedText);
+    await worker.terminate();
     return NextResponse.json(result);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to analyze uploaded images.' }, { status: 500 });
-  } finally {
-    await worker.terminate();
   }
 }

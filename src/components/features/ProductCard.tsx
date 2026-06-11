@@ -3,14 +3,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ScoreRing } from './ScoreRing';
 import { getGradeColor } from '@/lib/utils';
+import { useAppStore } from '@/lib/store';
 import { SearchResult } from '@/types';
 
 export function ProductCard({ product }: { product: SearchResult }) {
   const score = product.score ?? 5;
   const grade = product.grade ?? 'C';
+  const selectedCountry = useAppStore((state) => state.selectedCountry);
 
   return (
-    <Link href={`/product/${product.barcode}`}
+    <Link href={`/product/${product.barcode}?country=${selectedCountry}`}
       className="group flex items-center gap-4 p-4 glass rounded-2xl hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 transition-all duration-200 hover:-translate-y-0.5">
       {/* Image */}
       <div className="w-16 h-16 rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 shrink-0 flex items-center justify-center">
@@ -30,7 +32,7 @@ export function ProductCard({ product }: { product: SearchResult }) {
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-zinc-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors text-sm">
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors text-sm">
           {product.name}
         </h3>
         {product.brand && (

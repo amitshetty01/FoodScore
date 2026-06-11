@@ -59,6 +59,7 @@ export interface SearchResult {
   imageUrl?: string;
   score?: number;
   grade?: string;
+  novaGroup?: number;
 }
 
 export type CountryCode = 'IN' | 'US' | 'CA' | 'AU';

@@ -7,14 +7,18 @@ import { NutritionPanel } from '@/components/features/NutritionPanel';
 import { FavoriteButton } from '@/components/features/FavoriteButton';
 import { AffiliateRecommendations, SearchAlternativesButton } from '@/components/features/AffiliateRecs';
 import { EnhancedScoreDisplay } from '@/components/features/EnhancedScoreDisplay';
+import { TrustIndicators } from '@/components/features/TrustIndicators';
+import { CompareButton } from '@/components/features/CompareButton';
 import { getNutriScoreColor, getGradeColor, classifyIngredient, getIngredientBadgeClass } from '@/lib/utils';
 import { translateIngredient } from '@/lib/ingredientTranslation';
+import { calculateEnhancedHealthScore } from '@/lib/enhancedScoring';
 import { AlertCircle, Tag, Package, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
-import { FoodProduct, SearchResult } from '@/types';
+import { FoodProduct, SearchResult, CountryCode } from '@/types';
 
 interface ProductPageProps {
   params: { barcode: string };
+  searchParams?: { country?: string };
 }
 
 function normalizeSearchQuery(product: FoodProduct) {
@@ -68,11 +72,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default async function ProductPage({ params, searchParams }: ProductPageProps) {
   const product = await getProductByBarcode(params.barcode);
   if (!product) notFound();
 
+  const countryParam = searchParams?.country;
+  const country: CountryCode = (['IN', 'US', 'CA', 'AU'].includes(countryParam ?? '') ? countryParam : 'US') as CountryCode;
+
   const score = calculateHealthScore(product);
+  const enhancedScore = calculateEnhancedHealthScore(product, country);
 
   const ingredientItems = Array.from(
     new Set(
@@ -98,7 +106,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     };
   });
 
-  const alternatives = await getHealthierAlternatives(product, score.total);
+  const alternatives = await getHealthierAlternatives(product, enhancedScore.score);
 
   const structuredData = {
     '@context': 'https://schema.org',
@@ -106,11 +114,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     name: product.name,
     brand: { '@type': 'Brand', name: product.brand },
     image: product.imageUrl,
-    description: `Health score: ${score.total}/10. ${score.summary}`,
+    description: `Health score: ${enhancedScore.score}/10. ${enhancedScore.summary}`,
     gtin: params.barcode,
     aggregateRating: {
       '@type': 'AggregateRating',
-      ratingValue: score.total,
+      ratingValue: enhancedScore.score,
       bestRating: 10,
       worstRating: 1,
       ratingCount: 1,
@@ -146,12 +154,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <h1 className="font-syne font-extrabold text-base sm:text-lg md:text-2xl text-zinc-900 dark:text-white leading-tight break-words">{product.name}</h1>
                     {product.brand && <p className="text-xs sm:text-sm text-zinc-500 mt-0.5 truncate">{product.brand}</p>}
                   </div>
-                  <FavoriteButton product={product} score={score.total} />
+                  <FavoriteButton product={product} score={enhancedScore.score} />
                 </div>
 
                 <div className="flex flex-wrap items-center gap-1.5 mt-2 sm:mt-3">
-                  <span className={`text-[11px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${getGradeColor(score.grade)}`}>
-                    Grade {score.grade}
+                  <span className={`text-[11px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full ${getGradeColor(enhancedScore.grade)}`}>
+                    Grade {enhancedScore.grade}
                   </span>
                   {product.nutriScore && (
                     <span className={`text-[11px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-white ${getNutriScoreColor(product.nutriScore)}`}>
@@ -168,6 +176,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       <Package size={10} /> {product.quantity}
                     </span>
                   )}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  <CompareButton product={product} score={enhancedScore.score} grade={enhancedScore.grade} variant="header" />
                 </div>
 
                 <p className="text-[11px] sm:text-xs font-mono text-zinc-400 mt-1.5 sm:mt-2 flex items-center gap-1 truncate">
@@ -219,6 +231,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
             {/* Right: Sidebar */}
             <div className="space-y-4">
+              {/* Trust Indicators */}
+              <TrustIndicators product={product} dataConfidence={enhancedScore.dataConfidence} />
+
               {/* Search alternatives */}
               <SearchAlternativesButton product={product} />
 

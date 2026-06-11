@@ -3,6 +3,7 @@ import { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAppStore } from '@/lib/store';
 
 interface SearchBarProps {
   defaultValue?: string;
@@ -16,6 +17,7 @@ export function SearchBar({ defaultValue = '', size = 'default', autoFocus, plac
   const [query, setQuery] = useState(defaultValue);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
+  const selectedCountry = useAppStore((state) => state.selectedCountry);
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
@@ -28,12 +30,12 @@ export function SearchBar({ defaultValue = '', size = 'default', autoFocus, plac
     }
 
     if (/^\d{8,14}$/.test(q)) {
-      router.push(`/product/${q}`);
+      router.push(`/product/${q}?country=${selectedCountry}`);
       return;
     }
 
     router.push(`/search?q=${encodeURIComponent(q)}`);
-  }, [query, onSearch, router]);
+  }, [query, onSearch, router, selectedCountry]);
 
   return (
     <form onSubmit={handleSubmit} className={cn('relative w-full', size === 'large' && 'max-w-2xl')}>
