@@ -29,20 +29,24 @@ const getImpactIcon = (actual: number, max: number): string => {
 
 const categoryDetails: Record<string, { what: string; why: string }> = {
   Nutrition: {
-    what: 'Protein, fiber, sugar, sodium, saturated fat',
-    why: 'Measures how well the product meets dietary guidelines for essential nutrients and limits for less desirable ones.',
+    what: 'Protein, fiber, sugar, sodium, saturated fat, calories',
+    why: 'Measures how well the product meets dietary guidelines for essential nutrients and limits for less desirable ones (0-4 pts).',
   },
   Ingredients: {
-    what: 'Additives, harmful substances, beneficial components',
-    why: 'Evaluates ingredient quality including artificial additives, preservatives, and beneficial components like whole grains.',
+    what: 'Additives, artificial colors, sweeteners, preservatives',
+    why: 'Evaluates ingredient quality including artificial additives, preservatives, and refined ingredients (0-2 pts).',
   },
   Processing: {
     what: 'NOVA classification (1-4)',
-    why: 'Less processed foods are generally healthier. NOVA 1 (unprocessed) scores highest, NOVA 4 (ultra-processed) scores lowest.',
+    why: 'Less processed foods are generally healthier. NOVA 1 (unprocessed) scores highest, NOVA 4 (ultra-processed) scores lowest (0-2 pts).',
   },
   'Positive Factors': {
-    what: 'Fortification, certifications, labels',
-    why: 'Extra credit for organic certification, fortification, whole grain content, and transparent allergen labeling.',
+    what: 'Calcium, iron, vitamins, whole grains, probiotics, fortification',
+    why: 'Extra credit for beneficial nutrients and certifications (0-1 pt).',
+  },
+  'Country Alignment': {
+    what: 'Alignment with dietary guidelines',
+    why: 'Small adjustment (0-1 pt) based on how well the product meets the selected country\'s nutritional recommendations.',
   },
 };
 
@@ -67,6 +71,11 @@ export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({ score }) => {
       name: 'Positive Factors',
       actual: score.breakdown.positiveFactors,
       max: score.maxScores.positiveFactors,
+    },
+    {
+      name: 'Country Alignment',
+      actual: score.breakdown.countryAlignment,
+      max: score.maxScores.countryAlignment,
     },
   ];
 
@@ -132,7 +141,7 @@ export const ScoreBreakdown: React.FC<ScoreBreakdownProps> = ({ score }) => {
 
       <div className="text-[11px] sm:text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-zinc-800/50 p-2.5 sm:p-3 rounded-lg border border-gray-200 dark:border-zinc-700">
         <p className="font-semibold mb-0.5 sm:mb-1 text-gray-800 dark:text-gray-200">Calculation method</p>
-        <p>Your score is the sum of four weighted components: nutrition (0-40 pts), ingredients (0-30 pts), processing (0-15 pts), and positive factors (0-15 pts). Each component is based on {score.country} dietary guidelines.</p>
+        <p>Your score is the sum of five components: nutrition (0-4), ingredients (0-2), processing (0-2), positive factors (0-1), and country alignment (0-1). Each component is evaluated using {score.country} dietary guidelines where applicable.</p>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Sun, Moon, Scan, Search, Heart, LayoutDashboard, LogOut, ChevronDown, Shield, Menu, X, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAppStore } from '@/lib/store';
@@ -22,22 +22,8 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [countryOpen, setCountryOpen] = useState(false);
-  const countryRef = useRef<HTMLDivElement>(null);
   const selectedCountry = useAppStore((s) => s.selectedCountry);
-  const setSelectedCountry = useAppStore((s) => s.setSelectedCountry);
   const hasSelectedCountry = useAppStore((s) => s.hasSelectedCountry);
-  const setHasSelectedCountry = useAppStore((s) => s.setHasSelectedCountry);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (countryRef.current && !countryRef.current.contains(e.target as Node)) {
-        setCountryOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClick);
-    return () => document.removeEventListener('mousedown', handleClick);
-  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -93,37 +79,13 @@ export function Navbar() {
             </button>
           )}
 
-          {/* Country switcher */}
-          <div className="relative" ref={countryRef}>
-            <button
-              onClick={() => { setCountryOpen(!countryOpen); if (!hasSelectedCountry) { setHasSelectedCountry(true); } }}
-              className="h-8 sm:h-9 px-2 rounded-xl flex items-center gap-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all border border-zinc-200 dark:border-zinc-700 relative"
-              title={`Country: ${countryNames[selectedCountry]}`}
-            >
-              {!hasSelectedCountry && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 animate-pulse" />}
+          {/* Country display badge */}
+          {hasSelectedCountry && (
+            <div className="flex items-center gap-1.5 h-8 sm:h-9 px-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-700 text-xs font-semibold text-emerald-700 dark:text-emerald-300">
               <span className="text-base leading-none">{countryFlags[selectedCountry]}</span>
-              <span className="hidden sm:inline text-xs">{countryNames[selectedCountry]}</span>
-            </button>
-            {countryOpen && (
-              <div className="absolute right-0 top-10 sm:top-12 w-44 glass rounded-2xl shadow-xl p-1 z-50 border border-zinc-200 dark:border-zinc-700">
-                {(['IN', 'US', 'CA', 'AU'] as CountryCode[]).map((code) => (
-                  <button
-                    key={code}
-                    onClick={() => { setSelectedCountry(code); setCountryOpen(false); }}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-colors ${
-                      selectedCountry === code
-                        ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-200 font-semibold'
-                        : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                    }`}
-                  >
-                    <span className="text-base">{countryFlags[code]}</span>
-                    <span className="flex-1 text-left">{countryNames[code]}</span>
-                    {selectedCountry === code && <span className="text-emerald-600 dark:text-emerald-400 text-xs font-bold">✓</span>}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+              <span>Country: {countryNames[selectedCountry]}</span>
+            </div>
+          )}
 
           {session ? (
             <div className="relative">

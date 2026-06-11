@@ -69,9 +69,6 @@ export function SearchExperience({ defaultQuery = '' }: SearchExperienceProps) {
   const addToCompare = useAppStore((state) => state.addToCompare);
   const compareList = useAppStore((state) => state.compareList);
   const selectedCountry = useAppStore((state) => state.selectedCountry);
-  const setSelectedCountry = useAppStore((state) => state.setSelectedCountry);
-  const hasSelectedCountry = useAppStore((state) => state.hasSelectedCountry);
-  const setHasSelectedCountry = useAppStore((state) => state.setHasSelectedCountry);
 
   const stepProgress = useMemo(() => {
     return progressSteps.map((step, index) => ({
@@ -282,29 +279,6 @@ export function SearchExperience({ defaultQuery = '' }: SearchExperienceProps) {
   return (
     <div className="min-h-screen pt-24 pb-16 px-4">
       <div className="max-w-5xl mx-auto space-y-6">
-        {!hasSelectedCountry && (
-          <div className="glass rounded-2xl p-4 sm:p-5 border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20">
-            <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-3">
-              Select your country for personalized health scores
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {(['IN', 'US', 'CA', 'AU'] as const).map((code) => {
-                const flags: Record<string, string> = { IN: '🇮🇳', US: '🇺🇸', CA: '🇨🇦', AU: '🇦🇺' };
-                const names: Record<string, string> = { IN: 'India', US: 'USA', CA: 'Canada', AU: 'Australia' };
-                return (
-                  <button
-                    key={code}
-                    onClick={() => { setSelectedCountry(code); setHasSelectedCountry(true); }}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-800 dark:text-zinc-200 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-all shadow-sm"
-                  >
-                    <span className="text-lg">{flags[code]}</span>
-                    {names[code]}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         <div className="space-y-3">
           <SearchBar defaultValue={query} size="large" autoFocus={!query} placeholder="Search products or scan a barcode..." onSearch={handleSearch} />

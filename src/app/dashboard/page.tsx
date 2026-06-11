@@ -7,17 +7,10 @@ import Image from 'next/image';
 import { ScoreRing } from '@/components/features/ScoreRing';
 import { Heart, Search, Scan, TrendingUp, Percent, Award, ArrowRight, BarChart3 } from 'lucide-react';
 import { getGradeColor } from '@/lib/utils';
+import { getGradeFromScore } from '@/lib/enhancedScoring';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'My Dashboard — FoodScore' };
-
-function getGrade(score: number) {
-  if (score >= 8) return 'A';
-  if (score >= 6.5) return 'B';
-  if (score >= 5) return 'C';
-  if (score >= 3.5) return 'D';
-  return 'F';
-}
 
 function getScoreCategory(score: number): { label: string; color: string } {
   if (score >= 7) return { label: 'Healthy', color: 'text-emerald-600 dark:text-emerald-400' };
@@ -245,8 +238,8 @@ export default async function DashboardPage() {
                         {fav.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getGradeColor(getGrade(fav.score))}`}>
-                          Grade {getGrade(fav.score)}
+                        <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getGradeColor(getGradeFromScore(fav.score))}`}>
+                          Grade {getGradeFromScore(fav.score)}
                         </span>
                         <span className="text-xs text-zinc-500">{fav.score.toFixed(1)}</span>
                       </div>

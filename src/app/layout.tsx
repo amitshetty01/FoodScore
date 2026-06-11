@@ -2,9 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Syne } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/layout/Providers';
-import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
-import { ToastContainer } from '@/components/ui/Toast';
+import { ClientShell } from '@/components/layout/ClientShell';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const syne = Syne({ subsets: ['latin'], variable: '--font-syne', weight: ['400', '500', '600', '700', '800'] });
@@ -45,12 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={`${inter.variable} ${syne.variable} font-sans antialiased`}>
         <Providers>
-          <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors flex flex-col">
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <ToastContainer />
-          </div>
+          <ClientShell>{children}</ClientShell>
         </Providers>
       </body>
     </html>

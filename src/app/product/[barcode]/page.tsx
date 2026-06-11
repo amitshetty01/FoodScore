@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { getProductByBarcode, searchProducts } from '@/lib/openfoodfacts';
-import { calculateHealthScore } from '@/lib/scoring';
 import { NutritionPanel } from '@/components/features/NutritionPanel';
 import { FavoriteButton } from '@/components/features/FavoriteButton';
 import { AffiliateRecommendations, SearchAlternativesButton } from '@/components/features/AffiliateRecs';
@@ -40,14 +39,14 @@ async function getHealthierAlternatives(product: FoodProduct, currentScore: numb
 
   const alternatives = products
     .map((p): SearchResult => {
-      const score = calculateHealthScore(p);
+      const es = calculateEnhancedHealthScore(p);
       return {
         barcode: p.barcode,
         name: p.name,
         brand: p.brand,
         imageUrl: p.thumbnailUrl,
-        score: score.total,
-        grade: score.grade,
+        score: es.score,
+        grade: es.grade,
       };
     })
     .filter((result) => result.barcode !== product.barcode && (result.score ?? 0) > currentScore)
@@ -60,12 +59,12 @@ async function getHealthierAlternatives(product: FoodProduct, currentScore: numb
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const product = await getProductByBarcode(params.barcode);
   if (!product) return { title: 'Product Not Found — FoodScore' };
-  const score = calculateHealthScore(product);
+  const score = calculateEnhancedHealthScore(product);
   return {
-    title: `${product.name} — Health Score ${score.total}/10 | FoodScore`,
-    description: `${product.name} by ${product.brand || 'Unknown brand'} has a health score of ${score.total}/10. ${score.summary}`,
+    title: `${product.name} — Health Score ${score.score}/10 | FoodScore`,
+    description: `${product.name} by ${product.brand || 'Unknown brand'} has a health score of ${score.score}/10. ${score.summary}`,
     openGraph: {
-      title: `${product.name} — Score ${score.total}/10`,
+      title: `${product.name} — Score ${score.score}/10`,
       description: score.summary,
       images: product.imageUrl ? [{ url: product.imageUrl }] : [],
     },
@@ -77,10 +76,9 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
   if (!product) notFound();
 
   const countryParam = searchParams?.country;
-  const country: CountryCode = (['IN', 'US', 'CA', 'AU'].includes(countryParam ?? '') ? countryParam : 'US') as CountryCode;
+  const country: CountryCode = (['IN', 'US', 'CA', 'AU'].includes(countryParam ?? '') ? countryParam : '') as CountryCode;
 
-  const score = calculateHealthScore(product);
-  const enhancedScore = calculateEnhancedHealthScore(product, country);
+  const enhancedScore = calculateEnhancedHealthScore(product, country || undefined);
 
   const ingredientItems = Array.from(
     new Set(
@@ -195,7 +193,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
             <div className="lg:col-span-2 space-y-4 sm:space-y-6">
               <EnhancedScoreDisplay product={product} />
 
-              <NutritionPanel score={score} nutriments={product.nutriments} />
+              <NutritionPanel score={enhancedScore} nutriments={product.nutriments} />
 
               {alternatives.length > 0 && (
                 <div className="glass rounded-2xl p-4 sm:p-5">

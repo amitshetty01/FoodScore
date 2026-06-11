@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProductByBarcode, searchProducts } from '@/lib/openfoodfacts';
-import { calculateHealthScore } from '@/lib/scoring';
 import { calculateEnhancedHealthScore } from '@/lib/enhancedScoring';
 import { prisma } from '@/lib/prisma';
 import { CountryCode } from '@/types';
@@ -48,7 +47,7 @@ export async function GET(req: NextRequest) {
   if (barcode) {
     const cached = await tryCacheLookup(barcode);
     if (cached) {
-      return NextResponse.json({ product: cached.data, score: cached.scoreData });
+      return NextResponse.json({ product: cached.data, enhancedScore: cached.scoreData });
     }
 
     const product = await getProductByBarcode(barcode);
@@ -56,11 +55,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
 
-    const score = calculateHealthScore(product);
+    const enhancedScore = calculateEnhancedHealthScore(product, country);
 
-    await tryCacheSave(barcode, product, score.total, score);
+    await tryCacheSave(barcode, product, enhancedScore.score, enhancedScore);
 
-    return NextResponse.json({ product, score });
+    return NextResponse.json({ product, enhancedScore });
   }
 
   if (query) {

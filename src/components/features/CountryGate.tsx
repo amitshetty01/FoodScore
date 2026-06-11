@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useAppStore } from '@/lib/store';
 import { CountryCode } from '@/types';
 
@@ -12,22 +11,10 @@ const countries: { code: CountryCode; name: string; flag: string; description: s
 ];
 
 export function CountryGate() {
-  const { hasSelectedCountry, setHasSelectedCountry, setSelectedCountry } = useAppStore();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted || hasSelectedCountry) return null;
-
-  const handleSelect = (code: CountryCode) => {
-    setSelectedCountry(code);
-    setHasSelectedCountry(true);
-  };
+  const setSelectedCountry = useAppStore((s) => s.setSelectedCountry);
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-white dark:bg-zinc-950">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-white dark:bg-zinc-950">
       <div className="max-w-lg w-full mx-auto px-6 text-center">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20">
           <span className="text-white font-bold text-2xl font-syne">F</span>
@@ -37,13 +24,14 @@ export function CountryGate() {
         </h1>
         <p className="text-zinc-500 dark:text-zinc-400 mb-8 max-w-sm mx-auto leading-relaxed">
           Select your country to get personalized health scores based on local dietary guidelines.
+          Your selection is saved locally.
         </p>
 
         <div className="grid gap-3">
           {countries.map((c) => (
             <button
               key={c.code}
-              onClick={() => handleSelect(c.code)}
+              onClick={() => setSelectedCountry(c.code)}
               className="group w-full flex items-center gap-4 p-4 rounded-2xl border-2 border-transparent bg-zinc-50 dark:bg-zinc-900 hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50/50 dark:hover:bg-emerald-950/30 transition-all text-left"
             >
               <span className="text-3xl shrink-0">{c.flag}</span>
@@ -57,10 +45,6 @@ export function CountryGate() {
             </button>
           ))}
         </div>
-
-        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-8">
-          Your selection is saved locally. Change it anytime from the header.
-        </p>
       </div>
     </div>
   );

@@ -33,7 +33,6 @@ interface AppStore {
   setAgeGroup: (age: string) => void;
 
   hasSelectedCountry: boolean;
-  setHasSelectedCountry: (v: boolean) => void;
 
   compareList: CompareItem[];
   addToCompare: (item: CompareItem) => void;
@@ -64,15 +63,14 @@ export const useAppStore = create<AppStore>()(
       searchResults: [],
       setSearchResults: (results) => set({ searchResults: results }),
 
-      selectedCountry: 'US',
-      setSelectedCountry: (country) => set({ selectedCountry: country }),
+      selectedCountry: '' as CountryCode,
+      setSelectedCountry: (country) => set({ selectedCountry: country, hasSelectedCountry: true }),
       healthGoal: 'General Health',
       setHealthGoal: (goal) => set({ healthGoal: goal }),
       ageGroup: 'Adult',
       setAgeGroup: (age) => set({ ageGroup: age }),
 
       hasSelectedCountry: false,
-      setHasSelectedCountry: (v) => set({ hasSelectedCountry: v }),
 
       compareList: [],
       addToCompare: (item) =>
@@ -102,13 +100,15 @@ export const useAppStore = create<AppStore>()(
         set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
     }),
     {
-      name: 'foodscore-storage',
+      name: 'foodscore-storage-v2',
       partialize: (state) => ({
         hasSelectedCountry: state.hasSelectedCountry,
         recentSearches: state.recentSearches,
         selectedCountry: state.selectedCountry,
         compareList: state.compareList,
         searchFilters: state.searchFilters,
+        healthGoal: state.healthGoal,
+        ageGroup: state.ageGroup,
       }),
     }
   )

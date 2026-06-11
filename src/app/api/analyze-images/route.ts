@@ -1,6 +1,6 @@
 import { createWorker } from 'tesseract.js';
 import { NextResponse } from 'next/server';
-import { calculateHealthScore } from '@/lib/scoring';
+import { calculateEnhancedHealthScore } from '@/lib/enhancedScoring';
 import { normalizeIngredientTag } from '@/lib/utils';
 import type { FoodProduct, ImageAnalysisResult, NutritionFacts } from '@/types';
 import type { NextRequest } from 'next/server';
@@ -86,7 +86,7 @@ function buildAnalysisResult(text: string): ImageAnalysisResult {
     nutriments: nutritionFacts,
   } as const;
 
-  const score = calculateHealthScore(product as unknown as FoodProduct);
+  const enhancedScore = calculateEnhancedHealthScore(product as unknown as FoodProduct);
   const confidence = createConfidence(nutritionFacts, ingredients);
 
   const notes: string[] = [];
@@ -103,10 +103,10 @@ function buildAnalysisResult(text: string): ImageAnalysisResult {
     nutritionFacts,
     ingredients,
     extractedText: text,
-    healthScore: Math.round(score.total),
-    verdict: score.summary,
+    healthScore: Math.round(enhancedScore.score),
+    verdict: enhancedScore.summary,
     confidence,
-    topReasons: score.breakdown.slice(0, 4).map((item) => item.explanation),
+    topReasons: enhancedScore.topReasons.slice(0, 4).map((item) => item.description),
     notes: notes.length > 0 ? notes : ['Analysis completed successfully.'],
   };
 }

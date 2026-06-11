@@ -1,10 +1,11 @@
-import { HealthScore, NutritionFacts } from '@/types';
+import { NutritionFacts } from '@/types';
+import { EnhancedHealthScore } from '@/lib/enhancedScoring';
 import { TrendingUp, TrendingDown, Minus, CheckCircle2, AlertCircle } from 'lucide-react';
 import { formatNutrient } from '@/lib/utils';
 import { ScoreRing } from './ScoreRing';
 
 interface NutritionPanelProps {
-  score: HealthScore;
+  score: EnhancedHealthScore;
   nutriments: NutritionFacts;
 }
 
@@ -25,17 +26,17 @@ export function NutritionPanel({ score, nutriments }: NutritionPanelProps) {
     <div className="space-y-4 sm:space-y-6">
       {/* Score overview */}
       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-        <ScoreRing score={score.total} size={100} strokeWidth={10} grade={score.grade} />
+        <ScoreRing score={score.score} size={100} strokeWidth={10} grade={score.grade} />
         <div className="flex-1 text-center sm:text-left">
           <h2 className="font-syne font-bold text-base sm:text-xl text-zinc-900 dark:text-white mb-1 sm:mb-2">Health Score</h2>
           <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{score.summary}</p>
           <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2 sm:mt-3 justify-center sm:justify-start">
-            {score.strengths.slice(0, 3).map(s => (
+            {score.topPositives.slice(0, 3).map(s => (
               <span key={s} className="inline-flex items-center gap-1 text-[11px] sm:text-xs bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                 <CheckCircle2 size={10} /> {s}
               </span>
             ))}
-            {score.weaknesses.slice(0, 3).map(w => (
+            {score.topNegatives.slice(0, 3).map(w => (
               <span key={w} className="inline-flex items-center gap-1 text-[11px] sm:text-xs bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full">
                 <AlertCircle size={10} /> {w}
               </span>
@@ -48,7 +49,7 @@ export function NutritionPanel({ score, nutriments }: NutritionPanelProps) {
       <div className="glass rounded-xl sm:rounded-2xl p-4 sm:p-6">
         <h3 className="font-syne font-bold text-sm sm:text-base text-zinc-900 dark:text-white mb-3 sm:mb-4">Score Breakdown</h3>
         <div className="space-y-2.5 sm:space-y-3">
-          {score.breakdown.map((item, i) => (
+          {score.topReasons.length > 0 ? score.topReasons.map((item, i) => (
             <div key={i} className="flex items-start gap-2 sm:gap-3">
               <div className={`mt-0.5 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center shrink-0 ${
                 item.impact === 'positive' ? 'bg-emerald-100 dark:bg-emerald-900/40' :
@@ -60,17 +61,19 @@ export function NutritionPanel({ score, nutriments }: NutritionPanelProps) {
               </div>
               <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate">{item.factor}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-100 truncate">{item.title}</span>
                     <span className={`text-[11px] sm:text-xs font-bold shrink-0 ${
-                      item.points > 0 ? 'text-emerald-600 dark:text-emerald-400' : item.points < 0 ? 'text-red-500 dark:text-red-400' : 'text-zinc-400'
+                      item.score > 0 ? 'text-emerald-600 dark:text-emerald-400' : item.score < 0 ? 'text-red-500 dark:text-red-400' : 'text-zinc-400'
                     }`}>
-                      {item.points > 0 ? '+' : ''}{item.points.toFixed(1)}
+                      {item.score > 0 ? '+' : ''}{item.score.toFixed(1)}
                     </span>
                   </div>
-                  <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 leading-relaxed line-clamp-2 sm:line-clamp-none">{item.explanation}</p>
+                  <p className="text-[11px] sm:text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 leading-relaxed line-clamp-2 sm:line-clamp-none">{item.description}</p>
                 </div>
             </div>
-          ))}
+          )) : (
+            <p className="text-xs text-zinc-500">No specific factors identified.</p>
+          )}
         </div>
       </div>
 

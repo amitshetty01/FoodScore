@@ -31,27 +31,6 @@ export interface FoodProduct {
   countries?: string;
 }
 
-export interface ScoreBreakdown {
-  factor: string;
-  impact: 'positive' | 'negative' | 'neutral';
-  points: number;
-  explanation: string;
-}
-
-export interface HealthScore {
-  total: number;
-  breakdown: ScoreBreakdown[];
-  summary: string;
-  grade: 'A' | 'B' | 'C' | 'D' | 'F';
-  strengths: string[];
-  weaknesses: string[];
-}
-
-export interface ProductWithScore {
-  product: FoodProduct;
-  score: HealthScore;
-}
-
 export interface SearchResult {
   barcode: string;
   name: string;
@@ -65,6 +44,14 @@ export interface SearchResult {
 export type CountryCode = 'IN' | 'US' | 'CA' | 'AU';
 
 export type ConfidenceRating = 'High Confidence' | 'Medium Confidence' | 'Low Confidence';
+
+export interface GuidelineRow {
+  nutrient: string;
+  productAmount: string;
+  dailyReference: string;
+  percent: number;
+  status: 'favorable' | 'moderate' | 'high';
+}
 
 export interface ImageAnalysisResult {
   productName?: string;

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useAppStore } from '@/lib/store';
 import { ScoreRing } from '@/components/features/ScoreRing';
 import { getGradeColor } from '@/lib/utils';
+import { getGradeFromScore } from '@/lib/enhancedScoring';
 import { SearchResult } from '@/types';
 import { X, Search, Plus, BarChart3, ArrowLeft, Trash2, AlertCircle, RefreshCcw } from 'lucide-react';
 
@@ -58,14 +59,6 @@ const compareCategories = [
   { key: 'allergens', label: 'Allergens', type: 'count' },
   { key: 'labels', label: 'Certifications', type: 'count' },
 ];
-
-function getGrade(score: number): string {
-  if (score >= 8.5) return 'A';
-  if (score >= 7) return 'B';
-  if (score >= 5.5) return 'C';
-  if (score >= 4) return 'D';
-  return 'E';
-}
 
 function computeBestIdx(products: LoadedProduct[], cat: typeof compareCategories[number]): number {
   if (products.length < 2) return -1;
@@ -145,8 +138,8 @@ export default function ComparePage() {
               name: p.name || item.name || 'Unknown',
               brand: p.brand,
               imageUrl: p.imageUrl || p.thumbnailUrl || item.imageUrl,
-              score: data.score?.total ?? item.score ?? 5,
-              grade: data.score?.grade || item.grade || getGrade(data.score?.total ?? item.score ?? 5),
+              score: data.enhancedScore?.score ?? item.score ?? 5,
+              grade: data.enhancedScore?.grade || item.grade || getGradeFromScore(data.enhancedScore?.score ?? item.score ?? 5),
               novaGroup: p.novaGroup,
               nutriments: p.nutriments || {},
               ingredients: p.ingredients,
